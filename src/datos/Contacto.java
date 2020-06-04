@@ -7,8 +7,24 @@ public class Contacto {
 	private  String email;
 	private String direccion;
 	private String ciudad;
-	private long telefono;
+	private String telefono;
+	public static final int NUMERO_ATRIBUTOS = 6;
 	
+	
+	
+	public Contacto(String nombre, String apellido, String email, String direccion, String ciudad, String telefono) {
+		super();
+		this.nombre = nombre;
+		this.apellido = apellido;
+		this.email = email;
+		this.direccion = direccion;
+		this.ciudad = ciudad;
+		this.telefono = telefono;
+	}
+	public Contacto()
+	{
+		
+	}
 	public String getNombre() {
 		return nombre;
 	}
@@ -39,10 +55,10 @@ public class Contacto {
 	public void setCiudad(String ciudad) {
 		this.ciudad = ciudad;
 	}
-	public long getTelefono() {
+	public String getTelefono() {
 		return telefono;
 	}
-	public void setTelefono(long telefono) {
+	public void setTelefono(String telefono) {
 		this.telefono = telefono;
 	}
 	
