@@ -10,7 +10,7 @@ public class Agenda {
 		contactos = new ArrayList<Contacto>();
 	}
 	
-	//implementar Estos métodos
+	//implementar Estos metodos
 	
 	public ArrayList<Contacto> getContactos()
 	{
@@ -32,8 +32,8 @@ public class Agenda {
 	}
 	
 	
-	//crear estos metodos también sobre cargados con la parametros de nombre, apellido,etc, oara crear un objeto contacto con esos parametros
-	public boolean añadirContacto(Contacto contacto)
+	//crear estos metodos tambiï¿½n sobre cargados con la parametros de nombre, apellido,etc, oara crear un objeto contacto con esos parametros
+	public boolean aÃ±adirContacto(Contacto contacto)
 	{
 		contactos.add(contacto);
 		return true;
@@ -52,13 +52,13 @@ public class Agenda {
 	
 	
 	
-	public Contacto buscarContacto(String nombreContacto)
+	public Contacto buscarContacto( String nombreContacto)
 	{
 		return new Contacto();
 	}
 	
-	//implementar este método y sobrecargarlo con varios parámetros(dependiendo de qué atributo contacto se quiera editar)
-	//implementarlo también en vez del parámetro contacto con el indice de la lista
+	//implementar este mï¿½todo y sobrecargarlo con varios parï¿½metros(dependiendo de quï¿½ atributo contacto se quiera editar)
+	//implementarlo tambiï¿½n en vez del parï¿½metro contacto con el indice de la lista
 	public void editarContacto(Contacto contacto)
 	{
 			
