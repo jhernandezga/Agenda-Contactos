@@ -19,6 +19,9 @@ import java.awt.GridBagLayout;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.RowSpec;
+
+import logica.Conexion;
+
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import net.miginfocom.swing.MigLayout;
@@ -47,6 +50,7 @@ public class UI extends JFrame {
 	private JTextField columnaField;
 	private DefaultTableModel model;
 	private JTable tabla;
+	private int filaSeleccionada;
 	
 	public UI()
 	{
@@ -268,7 +272,7 @@ public class UI extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				// TODO Auto-generated method stub
-				click();
+				filaSeleccionada = tabla.getSelectedRow();
 				
 			}
 
@@ -335,7 +339,13 @@ public class UI extends JFrame {
 	
 	public void eliminar() {
 		
-		model.removeRow(tabla.getSelectedRow());
+		if(filaSeleccionada!=-1) {
+			model.removeRow(filaSeleccionada);
+			limpiarTabla();
+			Conexion.conexionEliminar(filaSeleccionada);
+			filaSeleccionada=-1;
+		}
+		
 		
 	}
 
@@ -352,8 +362,12 @@ public class UI extends JFrame {
 	public void agregar() {
 		String captura[] = { ""+(model.getRowCount()+1)+"",nombreField.getText() ,apellidoField.getText(),emailField.getText(),
 				direccionField.getText(),ciudadField.getText(),telefonoField.getText()};
-		model.addRow(captura);
-		limpiar();
+		if(Conexion.conexionAgregar(captura[1], captura[2], captura[3], captura[4], captura[5], captura[6]))
+		{
+			model.addRow(captura);
+			limpiar();
+		}
+		
 	}
 	
 	
@@ -364,11 +378,15 @@ public class UI extends JFrame {
 		for(int i = 0; i < matrizDatos.length; i++)
 		{
 			model.addRow(matrizDatos[i]);
-			for(int j = 0; j<6;j++)
-			{
-				System.out.println(matrizDatos[i][j]);
-			}
+			
 		}
+	}
+	public void limpiarTabla() {
 		
+		int count = model.getRowCount()-1;
+	
+		for(int i = count; i>= 0 ;i--) {
+			model.removeRow(i);
+		}
 	}
 }

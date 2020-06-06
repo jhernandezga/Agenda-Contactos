@@ -4,6 +4,10 @@ import java.io.Serializable;
 
 public class Contacto implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -532975367196361435L;
 	private String nombre;
 	private String apellido;
 	private  String email;

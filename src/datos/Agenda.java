@@ -1,14 +1,28 @@
 package datos;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import logica.Conexion;
 
 public class Agenda implements Serializable {
-	ArrayList<Contacto> contactos;
+	
+
+	private static final long serialVersionUID = 7673322979056613018L;
+	private ArrayList<Contacto> contactos;
 	
 	public Agenda()
 	{
-		contactos = new ArrayList<Contacto>();
+		contactos = deserializarContactos();
 	}
 	
 	//implementar Estos metodos
@@ -24,14 +38,14 @@ public class Agenda implements Serializable {
 		for(int i = 0; i < getContactos().size(); i++)
 		{
 			tmp = getContactos().get(i);
-			String[]  temporal = {""+(contactos.size())+"",tmp.getNombre(),tmp.getApellido(),tmp.getEmail(),tmp.getDireccion(),
+			String[]  temporal = {""+(i+1)+"",tmp.getNombre(),tmp.getApellido(),tmp.getEmail(),tmp.getDireccion(),
 						tmp.getCiudad(),""+tmp.getTelefono()+""};
 			datos[i] = temporal;
 			}
 		return datos;
 			
 	}
-	
+		
 	
 	//crear estos metodos tambiï¿½n sobre cargados con la parametros de nombre, apellido,etc, oara crear un objeto contacto con esos parametros
 	public boolean añadirContacto(Contacto contacto)
@@ -47,7 +61,13 @@ public class Agenda implements Serializable {
 	
 	public boolean eliminarContacto(int indiceContacto)
 	{
-		return true;
+		if(contactos.remove(indiceContacto) != null)
+		{
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 	
 	
@@ -64,6 +84,45 @@ public class Agenda implements Serializable {
 	{
 			
 	}
+	
+	
+	
+	public void serializarContactos()
+	{
+		File fichero = new File("MySaveFile.obj");
+	    try(ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(fichero))) {
+	       
+            os.writeObject(contactos);
+            os.close();
+
+         } catch (FileNotFoundException ex) {
+            Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
+        } 
+	}
+	
+	
+	public ArrayList<Contacto> deserializarContactos() {
+		File fichero = new File("MySaveFile.obj");
+		try(ObjectInputStream os = new ObjectInputStream(new FileInputStream(fichero))) {
+
+            Object firstLista = os.readObject();
+            return (ArrayList<Contacto>) firstLista;
+            
+         
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        } catch (IOException ex) {
+            Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
+            return new ArrayList<>();
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        } 
+	}
+
 	
 	
 
