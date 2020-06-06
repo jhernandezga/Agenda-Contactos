@@ -9,29 +9,24 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ui.UI;
 
-public class Conexion {
+public class Conexion implements Serializable {
 	
-	Agenda agenda;
-	UI interfaz;
+	private static Agenda agenda;
+	private UI interfaz;
         
         
 	
 	public Conexion()
 	{
 		agenda = new Agenda();
-		Contacto contactoPrueba = new Contacto("Jorge","Hernandez","jhernandezga@unal.edu.co",
-								"CRA ashd","Bogota","3122610238");
-                Contacto contactoPrueba1 = new Contacto("Pedro","Romero","promerol@unal.edu.co",
-                                                                "CRA dhsa","Duitama","8946521312");
-		agenda.añadirContacto(contactoPrueba);
-                agenda.añadirContacto(contactoPrueba1);
 		interfaz = new UI();
 		interfaz.setVisible(true);
-		interfaz.agregar(agenda.getDatosContactos());
+		interfaz.agregar(Leer().getDatosContactos());
 	}
 	
 	//Esta Clase se encargar�a de guardar el objeto agenda serializado(Crear un m�todo o crear otra clase)
@@ -39,8 +34,8 @@ public class Conexion {
 	//falta buscar l�gica de conexi�n entre interfaz y los datos guardados(en el momento de buscar, agregar, editar)
 	
         
-         public void Guardar()
-         {
+    public static void Guardar()
+    {
              FileOutputStream fileStrem = null;
              try {
                  // If the file "MySaveFile.obj" does not exist, it will be created
@@ -72,7 +67,7 @@ public class Conexion {
         }
          
          
-         public void Leer()
+         public Agenda Leer()
          {
              FileInputStream fileStremin = null;
 
@@ -88,6 +83,7 @@ public class Conexion {
 
             // Cast from objects to Person
             Agenda pragenda = (Agenda) firstAgenda;
+            return pragenda;
 
 //            System.out.println(pragenda);
 
@@ -95,10 +91,13 @@ public class Conexion {
          
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         } catch (IOException ex) {
             Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         } finally {
             try {
                 fileStremin.close();

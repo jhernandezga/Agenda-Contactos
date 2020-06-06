@@ -1,8 +1,9 @@
 package datos;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Agenda {
+public class Agenda implements Serializable {
 	ArrayList<Contacto> contactos;
 	
 	public Agenda()
@@ -18,7 +19,7 @@ public class Agenda {
 	}
 	
 	public String[][] getDatosContactos(){
-		String [][] datos = new String[getContactos().size()+2][Contacto.NUMERO_ATRIBUTOS];
+		String [][] datos = new String[getContactos().size()][Contacto.NUMERO_ATRIBUTOS];
 		Contacto tmp;
 		for(int i = 0; i < getContactos().size(); i++)
 		{
@@ -33,7 +34,7 @@ public class Agenda {
 	
 	
 	//crear estos metodos tambiï¿½n sobre cargados con la parametros de nombre, apellido,etc, oara crear un objeto contacto con esos parametros
-	public boolean aÃ±adirContacto(Contacto contacto)
+	public boolean añadirContacto(Contacto contacto)
 	{
 		contactos.add(contacto);
 		return true;

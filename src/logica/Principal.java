@@ -6,7 +6,7 @@ public class Principal {
 		// TODO Auto-generated method stub
              Conexion prueba = new Conexion();
 //             prueba.Guardar();
-             prueba.Leer();
+             //prueba.Leer();
 	}
 
 }
