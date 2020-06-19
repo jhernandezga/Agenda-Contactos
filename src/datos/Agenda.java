@@ -9,6 +9,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,6 +25,7 @@ public class Agenda implements Serializable {
 	public Agenda()
 	{
 		contactos = deserializarContactos();
+
 	}
 	
 	//implementar Estos metodos
@@ -50,7 +53,20 @@ public class Agenda implements Serializable {
 	//crear estos metodos tambiï¿½n sobre cargados con la parametros de nombre, apellido,etc, oara crear un objeto contacto con esos parametros
 	public boolean añadirContacto(Contacto contacto)
 	{
+		Comparator<Contacto> comparador = new Comparator<Contacto>(){
+
+			@Override
+			public int compare(Contacto o1, Contacto o2) {
+				// TODO Auto-generated method stub
+				return o1.getNombre().compareTo(o2.getNombre());
+			}
+			
+		};
+		if(contacto.getNombre().isEmpty() || contacto.getNombre().isBlank()) {
+			return false;
+		}
 		contactos.add(contacto);
+		Collections.sort(contactos, comparador );
 		return true;
 	}
 	
@@ -73,16 +89,21 @@ public class Agenda implements Serializable {
 	
 	
 	
-	public Contacto buscarContacto( String nombreContacto)
+	public int buscarContacto( String nombreContacto)
 	{
-		return new Contacto();
+		for(int i = 0; i < contactos.size();i++) {
+			if(nombreContacto.equals(contactos.get(i).getNombre())){
+				return i;
+			}
+		}
+		return -1;
 	}
 	
 	//implementar este mï¿½todo y sobrecargarlo con varios parï¿½metros(dependiendo de quï¿½ atributo contacto se quiera editar)
 	//implementarlo tambiï¿½n en vez del parï¿½metro contacto con el indice de la lista
-	public void editarContacto(Contacto contacto)
+	public void editarContacto(int index, String nombre, String apellido, String email,String direccion, String ciudad, String telefono)
 	{
-			
+			contactos.set(index, new Contacto(nombre,apellido,email,direccion,ciudad,telefono));
 	}
 	
 	
@@ -113,14 +134,17 @@ public class Agenda implements Serializable {
          
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
+            return new ArrayList<Contacto>();
         } catch (IOException ex) {
             Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
             return new ArrayList<>();
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
+            return new ArrayList<Contacto>();
         } 
+		catch(Exception e) {
+			 return new ArrayList<Contacto>();
+		}
 	}
 
 	

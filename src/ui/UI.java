@@ -27,30 +27,37 @@ import javax.swing.GroupLayout.Alignment;
 import net.miginfocom.swing.MigLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import java.awt.Rectangle;
+
 import javax.swing.JTextField;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
 import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Vector;
 import java.awt.event.ActionEvent;
+import java.awt.Color;
 
 public class UI extends JFrame {
 
 	private JPanel contentPane;
-	private JTextField textField;
+	private JTextField buscarField;
 	private JTextField nombreField;
 	private JTextField apellidoField;
 	private JTextField emailField;
 	private JTextField direccionField;
 	private JTextField ciudadField;
 	private JTextField telefonoField;
-	private JTextField filaField;
-	private JTextField columnaField;
 	private DefaultTableModel model;
 	private JTable tabla;
-	private int filaSeleccionada;
+	private int filaSeleccionada = -1;
+	private JScrollPane deslizador;
 	
 	public UI()
 	{
@@ -59,6 +66,21 @@ public class UI extends JFrame {
 	}
 
 	public void iniComponents() {
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (InstantiationException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IllegalAccessException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (UnsupportedLookAndFeelException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 655, 435);
@@ -86,8 +108,9 @@ public class UI extends JFrame {
 		panel.add(panel_1, gbc_panel_1);
 		
 		JLabel tituloLabel = new JLabel("Agenda de Contactos");
-		tituloLabel.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		tituloLabel.setBounds(218, 11, 185, 14);
+		tituloLabel.setForeground(new Color(30, 144, 255));
+		tituloLabel.setFont(new Font("Trebuchet MS", Font.BOLD, 17));
+		tituloLabel.setBounds(215, 0, 207, 30);
 		panel_1.add(tituloLabel);
 		
 		JPanel panel_2 = new JPanel();
@@ -122,17 +145,22 @@ public class UI extends JFrame {
 		gbc_busqueda.gridy = 0;
 		panel_3.add(busqueda, gbc_busqueda);
 		
-		textField = new JTextField();
-		textField.setText("");
-		GridBagConstraints gbc_textField = new GridBagConstraints();
-		gbc_textField.insets = new Insets(0, 0, 0, 5);
-		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField.gridx = 1;
-		gbc_textField.gridy = 0;
-		panel_3.add(textField, gbc_textField);
-		textField.setColumns(10);
+		buscarField = new JTextField();
+		buscarField.setText("");
+		GridBagConstraints gbc_buscarField = new GridBagConstraints();
+		gbc_buscarField.insets = new Insets(0, 0, 0, 5);
+		gbc_buscarField.fill = GridBagConstraints.HORIZONTAL;
+		gbc_buscarField.gridx = 1;
+		gbc_buscarField.gridy = 0;
+		panel_3.add(buscarField, gbc_buscarField);
+		buscarField.setColumns(10);
 		
 		JButton buscarButton = new JButton("Buscar");
+		buscarButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				buscar();
+			}
+		});
 		GridBagConstraints gbc_buscarButton = new GridBagConstraints();
 		gbc_buscarButton.insets = new Insets(0, 0, 0, 5);
 		gbc_buscarButton.gridx = 2;
@@ -152,7 +180,8 @@ public class UI extends JFrame {
 		panel_5.setLayout(new GridLayout(0, 1, 0, 0));
 		
 		JLabel titulo3Label = new JLabel("Agregar Contactos");
-		titulo3Label.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		titulo3Label.setForeground(new Color(30, 144, 255));
+		titulo3Label.setFont(new Font("Trebuchet MS", Font.BOLD, 14));
 		panel_5.add(titulo3Label);
 		
 		JPanel panel_6 = new JPanel();
@@ -223,37 +252,6 @@ public class UI extends JFrame {
 		agregarButton.setBounds(415, 66, 91, 23);
 		panel_6.add(agregarButton);
 		
-		JButton editarButton = new JButton("Editar");
-		editarButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				editar();
-			}
-		});
-		editarButton.setBounds(510, 66, 89, 23);
-		panel_6.add(editarButton);
-		
-		JLabel filaLabel = new JLabel("Fila");
-		filaLabel.setBounds(0, 70, 46, 14);
-		panel_6.add(filaLabel);
-		
-		JLabel columnaLabel = new JLabel("Columna");
-		columnaLabel.setBounds(201, 70, 46, 14);
-		panel_6.add(columnaLabel);
-		
-		filaField = new JTextField();
-		filaField.setEnabled(true);
-		filaField.setEditable(true);
-		filaField.setText("");
-		filaField.setBounds(56, 64, 135, 20);
-		panel_6.add(filaField);
-		filaField.setColumns(10);
-		
-		columnaField = new JTextField();
-		columnaField.setText("");
-		columnaField.setBounds(267, 64, 125, 20);
-		panel_6.add(columnaField);
-		columnaField.setColumns(10);
-		
 		
 		model = new DefaultTableModel();
 		model.addColumn("#");
@@ -263,8 +261,19 @@ public class UI extends JFrame {
 		model.addColumn("Direccion");
 		model.addColumn("Ciudad");
 		model.addColumn("Telefono");
-		tabla = new JTable(model);
-		JScrollPane deslizador = new JScrollPane(tabla);
+		tabla = new JTable(model) {
+
+			private static final long serialVersionUID = 1L;
+			@Override
+			public boolean isCellEditable(int rowIndex, int columnIndex) {
+				if(columnIndex == 0) {
+					return false;
+				}
+				return true;
+			}
+			
+		};
+		deslizador = new JScrollPane(tabla);
 		deslizador.setBounds(20, 5, 600, 150);
 		panel_2.add(deslizador);
 		tabla.addMouseListener(new MouseListener() {
@@ -307,8 +316,18 @@ public class UI extends JFrame {
 				eliminar();
 			}
 		});
-		eliminarButton.setBounds(489, 165, 89, 23);
+		eliminarButton.setBounds(352, 166, 89, 23);
 		panel_2.add(eliminarButton);
+		
+		
+		JButton guardarButton = new JButton("Guardar Edicion");
+		guardarButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				editar();
+			}
+		});
+		guardarButton.setBounds(451, 166, 121, 23);
+		panel_2.add(guardarButton);
 		
 		
 		
@@ -322,19 +341,12 @@ public class UI extends JFrame {
 		direccionField.setText("");
 		ciudadField.setText("");
 		telefonoField.setText("");
-		filaField.setText("");
+
 	}
 	public void click()
 	{
 		System.out.println(tabla.getSelectedRow());
-	}
 	
-	public String[] capturarDatos()
-	{
-		String captura[] = {nombreField.getText() ,apellidoField.getText(),emailField.getText(),
-				direccionField.getText(),ciudadField.getText(),telefonoField.getText(),
-				filaField.getText(),columnaField.getText()};
-		return  captura;
 	}
 	
 	public void eliminar() {
@@ -350,22 +362,27 @@ public class UI extends JFrame {
 	}
 
 	public void editar() {
-		String captura[] = {nombreField.getText() ,apellidoField.getText(),emailField.getText(),
-				direccionField.getText(),ciudadField.getText(),telefonoField.getText()};
-		for(int i = 0; i <captura.length;i++)
-		{
-			model.setValueAt(captura[i], Integer.parseInt(filaField.getText()), i);
+		if(filaSeleccionada != -1) {
+			Conexion.conexionEditar(filaSeleccionada, model.getDataVector().elementAt(filaSeleccionada));
+			/*Vector data = model.getDataVector().elementAt(filaSeleccionada);
+			for(int i = 1; i<=6;i++) {
+				System.out.println(data.get(i).getClass());
+			}*/
+			JOptionPane.showMessageDialog(contentPane, "Se han guardado lo cambios de edición correctamente");
+			filaSeleccionada = -1;
 		}
-		limpiar();
+		
 	}
 
 	public void agregar() {
+	
 		String captura[] = { ""+(model.getRowCount()+1)+"",nombreField.getText() ,apellidoField.getText(),emailField.getText(),
 				direccionField.getText(),ciudadField.getText(),telefonoField.getText()};
 		if(Conexion.conexionAgregar(captura[1], captura[2], captura[3], captura[4], captura[5], captura[6]))
 		{
-			model.addRow(captura);
 			limpiar();
+			
+			JOptionPane.showMessageDialog(contentPane, "Se ha agregado a "+captura[1] +" " +captura[2]+ " correctamente");
 		}
 		
 	}
@@ -375,12 +392,32 @@ public class UI extends JFrame {
 	//Este método es para pasarle los datos iniciales  desde el paquete de Lógica
 	public void agregar(String matrizDatos[][])
 	{
+		limpiarTabla();
 		for(int i = 0; i < matrizDatos.length; i++)
 		{
 			model.addRow(matrizDatos[i]);
 			
 		}
+		
 	}
+	
+	public void buscar() {
+		
+		int aBuscar = Conexion.conexionBuscar(this.buscarField.getText());
+		if(aBuscar == -1) {
+			JOptionPane.showMessageDialog(contentPane, "Este contacto no Existe");
+			
+		}else {
+			tabla.requestFocus();
+			tabla.changeSelection(aBuscar,1,false, false);
+			
+			
+		}
+		
+	}
+	
+	
+	
 	public void limpiarTabla() {
 		
 		int count = model.getRowCount()-1;
